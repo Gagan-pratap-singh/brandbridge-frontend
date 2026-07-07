@@ -1,5 +1,6 @@
 import API_BASE_URL from "./api";
 
+
 function getToken() {
   return localStorage.getItem("token");
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  getCampaigns,
+  getMyCampaigns,
   deleteCampaign,
 } from "../../services/campaign";
 
@@ -25,7 +25,7 @@ export default function Campaigns() {
 
   const loadCampaigns = async () => {
     try {
-      const data = await getCampaigns();
+      const data = await getMyCampaigns();
       setCampaigns(data);
     } catch (error) {
       console.error(error);

@@ -5,10 +5,31 @@ import {
   updateApplicationStatus,
 } from "../../services/application";
 
+interface Application {
+  id: number;
+  campaign_id: number;
+  influencer_id: number;
+  status: string;
+  message: string;
+
+  campaign?: {
+    id: number;
+    title: string;
+  };
+
+  influencer?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+
+  can_message?: boolean;
+}
+
 export default function Applications() {
   const navigate = useNavigate();
 
-  const [applications, setApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -71,13 +92,9 @@ export default function Applications() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-
           <table className="w-full">
-
             <thead className="bg-gray-50">
-
               <tr>
-
                 <th className="text-left p-5">
                   Campaign
                 </th>
@@ -97,23 +114,18 @@ export default function Applications() {
                 <th className="text-left">
                   Actions
                 </th>
-
               </tr>
-
             </thead>
 
             <tbody>
-
               {applications.length === 0 ? (
                 <tr>
-
                   <td
                     colSpan={5}
                     className="text-center p-8 text-gray-500"
                   >
                     No applications found
                   </td>
-
                 </tr>
               ) : (
                 applications.map((app) => (
@@ -122,11 +134,13 @@ export default function Applications() {
                     className="border-t hover:bg-gray-50"
                   >
                     <td className="p-5">
-                      {app.campaign_id}
+                      {app.campaign?.title ||
+                        `Campaign #${app.campaign_id}`}
                     </td>
 
                     <td>
-                      {app.influencer_id}
+                      {app.influencer?.name ||
+                        `Influencer #${app.influencer_id}`}
                     </td>
 
                     <td>
@@ -144,10 +158,8 @@ export default function Applications() {
                     </td>
 
                     <td>
-
                       {app.status === "pending" && (
                         <div className="flex gap-2">
-
                           <button
                             onClick={() =>
                               handleAction(
@@ -171,7 +183,6 @@ export default function Applications() {
                           >
                             Reject
                           </button>
-
                         </div>
                       )}
 
@@ -193,17 +204,12 @@ export default function Applications() {
                           Rejected
                         </span>
                       )}
-
                     </td>
-
                   </tr>
                 ))
               )}
-
             </tbody>
-
           </table>
-
         </div>
       )}
     </div>

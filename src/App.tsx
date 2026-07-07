@@ -21,6 +21,7 @@ import Analytics from "./pages/brand/Analytics";
 import Settings from "./pages/brand/Settings";
 import DiscoverInfluencers from "./pages/brand/DiscoverInfluencers";
 import Invitations from "./pages/brand/Invitations";
+import BrandInfluencerProfile from "./pages/brand/InfluencerProfile";
 
 /* Influencer Layout */
 import InfluencerLayout from "./layouts/InfluencerLayout";
@@ -85,6 +86,10 @@ function App() {
     element={<DiscoverInfluencers />}
   />
   <Route
+  path="influencers/:userId"
+  element={<BrandInfluencerProfile />}
+  />
+  <Route
   path="invitations"
   element={<Invitations />}
   />
@@ -106,7 +111,7 @@ function App() {
         />
         <Route path="messages">
         <Route index element={<InfluencerMessages />} />
-        <Route path=":userId" element={<InfluencerMessages />} />
+        <Route path=":userId"  element={<InfluencerMessages />}  />
         </Route>
         <Route
           path="notifications"

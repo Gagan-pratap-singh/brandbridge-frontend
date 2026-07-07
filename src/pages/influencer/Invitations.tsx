@@ -3,6 +3,7 @@ import {
   getInfluencerInvitations,
   updateInvitation,
 } from "../../services/invitation";
+import { useNavigate } from "react-router-dom";
 
 interface Invitation {
   id: number;
@@ -16,6 +17,7 @@ interface Invitation {
 export default function InfluencerInvitations() {
   const [loading, setLoading] = useState(true);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadInvitations();
@@ -194,9 +196,24 @@ export default function InfluencerInvitations() {
 
                     ) : (
 
-                      <span className="text-gray-400">
-                        Completed
-                      </span>
+                      <div className="flex gap-2">
+  {invite.status.toLowerCase() === "accepted" && (
+    <button
+      onClick={() =>
+        navigate(
+          `/influencer/messages/${invite.brand_id}`
+        )
+      }
+      className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+    >
+      Message
+    </button>
+  )}
+
+  <span className="text-gray-400 self-center">
+    Completed
+  </span>
+</div>
 
                     )}
 

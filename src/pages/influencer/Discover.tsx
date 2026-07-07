@@ -182,25 +182,34 @@ export default function Discover() {
                 View
               </button>
 
-              {applications.includes(
-                campaign.id
-              ) ? (
-                <button
-                  disabled
-                  className="flex-1 bg-green-600 text-white py-3 rounded-xl cursor-not-allowed"
-                >
-                  Applied ✓
-                </button>
-              ) : (
-                <button
-                  onClick={() =>
-                    handleApply(campaign.id)
-                  }
-                  className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700"
-                >
-                  Apply
-                </button>
-              )}
+  {campaign.already_invited ? (
+
+  <button
+  disabled
+  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-xl cursor-not-allowed font-semibold shadow"
+>
+  📩 You were Invited
+</button>
+
+) : campaign.already_applied || applications.includes(campaign.id) ? (
+
+  <button
+    disabled
+    className="flex-1 bg-green-600 text-white py-3 rounded-xl cursor-not-allowed"
+  >
+    Applied ✓
+  </button>
+
+) : (
+
+  <button
+    onClick={() => handleApply(campaign.id)}
+    className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700"
+  >
+    Apply
+  </button>
+
+)}
 
             </div>
 

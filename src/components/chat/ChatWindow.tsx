@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { getChat } from "../../services/messages";
+import { getChat, connectSocket } from "../../services/messages";
 
 interface Message {
   id: number;
@@ -22,19 +22,52 @@ export default function ChatWindow({
 
   const myId = Number(localStorage.getItem("user_id"));
 
+  // -------------------------
+  // Load history when chat changes
+  // -------------------------
   useEffect(() => {
     if (!selectedUser) return;
-
-    // Load messages immediately
     loadMessages();
-
-    // Refresh every 2 seconds
-    const interval = setInterval(() => {
-      loadMessages();
-    }, 2000);
-
-    return () => clearInterval(interval);
   }, [selectedUser]);
+
+  // -------------------------
+  // Real-time updates via socket
+  // -------------------------
+  useEffect(() => {
+    if (!myId) return;
+
+    const socket = connectSocket(myId);
+
+    const handleIncoming = (event: MessageEvent) => {
+      let incoming: Message;
+
+      try {
+        incoming = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+
+      // Only show it if it belongs to the chat currently open
+      const belongsToThisChat =
+        incoming.sender_id === selectedUser ||
+        incoming.sender_id === myId;
+
+      if (!belongsToThisChat) return;
+
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === incoming.id)) {
+          return prev;
+        }
+        return [...prev, incoming];
+      });
+    };
+
+    socket.addEventListener("message", handleIncoming);
+
+    return () => {
+      socket.removeEventListener("message", handleIncoming);
+    };
+  }, [selectedUser, myId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
@@ -47,13 +80,7 @@ export default function ChatWindow({
 
     try {
       const data = await getChat(selectedUser);
-
-      setMessages((prev) => {
-        if (JSON.stringify(prev) !== JSON.stringify(data)) {
-          return data;
-        }
-        return prev;
-      });
+      setMessages(data);
     } catch (err) {
       console.error(err);
     }
@@ -68,7 +95,7 @@ export default function ChatWindow({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50">
+    <div className="flex-1 flex flex-col bg-gray-50 min-h-0">
       {/* Header */}
       <div className="bg-white border-b px-6 py-4">
         <h2 className="font-bold text-xl">

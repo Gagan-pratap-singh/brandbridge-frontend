@@ -1,5 +1,7 @@
 import API_BASE_URL from "./api";
 
+let socket: WebSocket | null = null;
+
 function getToken() {
   return localStorage.getItem("token");
 }
@@ -9,10 +11,38 @@ const headers = () => ({
   Authorization: `Bearer ${getToken()}`,
 });
 
-// ===============================
-// Get Conversation List
-// ===============================
-export async function getConversations(search?: string) {
+export function connectSocket(userId: number) {
+  if (
+    socket &&
+    (socket.readyState === WebSocket.OPEN ||
+      socket.readyState === WebSocket.CONNECTING)
+  ) {
+    return socket;
+  }
+
+  socket = new WebSocket(
+    `ws://localhost:8000/ws/chat/${userId}`
+  );
+
+  socket.onclose = () => {
+    console.log("Chat socket disconnected, retrying in 3s");
+    setTimeout(() => connectSocket(userId), 3000);
+  };
+
+  socket.onerror = (err) => {
+    console.error("Chat socket error:", err);
+  };
+
+  return socket;
+}
+
+export function getSocket() {
+  return socket;
+}
+
+export async function getConversations(
+  search?: string
+) {
   let url = `${API_BASE_URL}/messages`;
 
   if (search) {
@@ -24,16 +54,17 @@ export async function getConversations(search?: string) {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to load conversations");
+    throw new Error(
+      "Failed to load conversations"
+    );
   }
 
   return res.json();
 }
 
-// ===============================
-// Get Chat
-// ===============================
-export async function getChat(userId: number) {
+export async function getChat(
+  userId: number
+) {
   const res = await fetch(
     `${API_BASE_URL}/messages/chat/${userId}`,
     {
@@ -42,15 +73,14 @@ export async function getChat(userId: number) {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to load chat");
+    throw new Error(
+      "Failed to load chat"
+    );
   }
 
   return res.json();
 }
 
-// ===============================
-// Send Message
-// ===============================
 export async function sendMessage(
   receiverId: number,
   message: string,
@@ -72,26 +102,43 @@ export async function sendMessage(
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.detail || "Failed to send message");
+    throw new Error(
+      data.detail ||
+        "Failed to send message"
+    );
   }
 
   return data;
 }
 
 // ===============================
-// Unread Count
+// Upload File / Image
 // ===============================
-export async function getUnreadCount() {
-  const res = await fetch(
-    `${API_BASE_URL}/messages/unread/count`,
-    {
-      headers: headers(),
-    }
-  );
+export async function uploadMessageFile(
+  receiverId: number,
+  file: File,
+  campaignId?: number
+) {
+  const formData = new FormData();
+  formData.append("receiver_id", String(receiverId));
+  if (campaignId) {
+    formData.append("campaign_id", String(campaignId));
+  }
+  formData.append("file", file);
+
+  const res = await fetch(`${API_BASE_URL}/messages/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: formData,
+  });
+
+  const data = await res.json();
 
   if (!res.ok) {
-    throw new Error("Failed to fetch unread count");
+    throw new Error(data.detail || "Failed to upload file");
   }
 
-  return res.json();
+  return data;
 }

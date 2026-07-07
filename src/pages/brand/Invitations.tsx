@@ -50,8 +50,6 @@ export default function Invitations() {
 
   return (
     <div className="space-y-8">
-
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">
           Sent Invitations
@@ -62,7 +60,6 @@ export default function Invitations() {
         </p>
       </div>
 
-      {/* Loading */}
       {loading ? (
         <div className="bg-white rounded-2xl shadow-sm border p-16 text-center">
           <p className="text-gray-500 text-lg">
@@ -70,10 +67,7 @@ export default function Invitations() {
           </p>
         </div>
       ) : invitations.length === 0 ? (
-
-        /* Empty State */
         <div className="bg-white rounded-2xl shadow-sm border p-16 text-center">
-
           <div className="text-6xl mb-6">
             📨
           </div>
@@ -89,24 +83,19 @@ export default function Invitations() {
           </p>
 
           <button
-            onClick={() => navigate("/dashboard/influencers")}
+            onClick={() =>
+              navigate("/dashboard/influencers")
+            }
             className="mt-8 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition"
           >
             Discover Influencers
           </button>
-
         </div>
-
       ) : (
-
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-
           <table className="w-full">
-
             <thead className="bg-gray-50">
-
               <tr>
-
                 <th className="text-left p-5">
                   Campaign
                 </th>
@@ -127,19 +116,18 @@ export default function Invitations() {
                   Date
                 </th>
 
+                <th className="text-left">
+                  Actions
+                </th>
               </tr>
-
             </thead>
 
             <tbody>
-
               {invitations.map((invite) => (
-
                 <tr
                   key={invite.id}
                   className="border-t hover:bg-gray-50"
                 >
-
                   <td className="p-5 font-medium">
                     Campaign #{invite.campaign_id}
                   </td>
@@ -153,7 +141,6 @@ export default function Invitations() {
                   </td>
 
                   <td>
-
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium ${badge(
                         invite.status
@@ -161,7 +148,6 @@ export default function Invitations() {
                     >
                       {invite.status}
                     </span>
-
                   </td>
 
                   <td>
@@ -170,18 +156,27 @@ export default function Invitations() {
                     ).toLocaleDateString()}
                   </td>
 
+                  <td>
+                    {invite.status.toLowerCase() ===
+                      "accepted" && (
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/dashboard/messages/${invite.influencer_id}`
+                          )
+                        }
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+                      >
+                        Message
+                      </button>
+                    )}
+                  </td>
                 </tr>
-
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
       )}
-
     </div>
   );
 }
