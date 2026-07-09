@@ -4,7 +4,7 @@ import {
   getMyProfile,
   createProfile,
   updateProfile,
-} from "../../services/influencer";
+} from "../../services/influencerService";
 
 export default function Profile() {
   const [loading, setLoading] = useState(true);

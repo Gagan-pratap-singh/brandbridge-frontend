@@ -11,6 +11,7 @@ interface Application {
   influencer_id: number;
   status: string;
   message: string;
+  created_at: string;
 
   campaign?: {
     id: number;
@@ -39,8 +40,30 @@ export default function Applications() {
   const load = async () => {
     try {
       setLoading(true);
+
       const data = await getBrandApplications();
-      setApplications(data);
+
+      const sorted = [...data].sort((a, b) => {
+        const order: Record<string, number> = {
+          accepted: 1,
+          pending: 2,
+          rejected: 3,
+        };
+
+        const statusCompare =
+          order[a.status] - order[b.status];
+
+        if (statusCompare !== 0) {
+          return statusCompare;
+        }
+
+        return (
+          new Date(b.created_at).getTime() -
+          new Date(a.created_at).getTime()
+        );
+      });
+
+      setApplications(sorted);
     } catch (err) {
       console.error(err);
       alert("Failed to load applications");
@@ -108,6 +131,10 @@ export default function Applications() {
                 </th>
 
                 <th className="text-left">
+                  Applied On
+                </th>
+
+                <th className="text-left">
                   Status
                 </th>
 
@@ -121,7 +148,7 @@ export default function Applications() {
               {applications.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center p-8 text-gray-500"
                   >
                     No applications found
@@ -133,18 +160,37 @@ export default function Applications() {
                     key={app.id}
                     className="border-t hover:bg-gray-50"
                   >
-                    <td className="p-5">
+                    <td className="p-5 font-medium">
                       {app.campaign?.title ||
                         `Campaign #${app.campaign_id}`}
                     </td>
 
                     <td>
-                      {app.influencer?.name ||
-                        `Influencer #${app.influencer_id}`}
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/dashboard/influencers/${app.influencer?.id}`
+                          )
+                        }
+                        className="text-indigo-600 hover:underline font-medium"
+                      >
+                        {app.influencer?.name ||
+                          `Influencer #${app.influencer_id}`}
+                      </button>
+                    </td>
+
+                    <td className="max-w-sm truncate">
+                      {app.message || "-"}
                     </td>
 
                     <td>
-                      {app.message || "-"}
+                      {new Date(
+                        app.created_at
+                      ).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </td>
 
                     <td>
@@ -200,7 +246,7 @@ export default function Applications() {
                       )}
 
                       {app.status === "rejected" && (
-                        <span className="text-gray-400">
+                        <span className="text-gray-400 font-medium">
                           Rejected
                         </span>
                       )}

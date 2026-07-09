@@ -64,12 +64,16 @@ export async function getMyProfile() {
   const res = await fetch(
     `${API_BASE_URL}/influencers/profile/me`,
     {
+      method: "GET",
       headers: headers(),
     }
   );
 
   if (!res.ok) {
-    throw new Error("Profile not found");
+    const result = await res.json().catch(() => ({}));
+    throw new Error(
+      result.detail || "Profile not found"
+    );
   }
 
   return res.json();
@@ -82,6 +86,7 @@ export async function profileExists() {
   const res = await fetch(
     `${API_BASE_URL}/influencers/profile/exists`,
     {
+      method: "GET",
       headers: headers(),
     }
   );
@@ -102,6 +107,7 @@ export async function getInfluencer(
   const res = await fetch(
     `${API_BASE_URL}/influencers/${userId}`,
     {
+      method: "GET",
       headers: headers(),
     }
   );
@@ -120,8 +126,10 @@ export async function discoverInfluencers(
   params?: {
     search?: string;
     niche?: string;
+    category?: string;
     location?: string;
     min_followers?: number;
+    max_followers?: number;
     min_engagement?: number;
     sort?: string;
     page?: number;
@@ -131,56 +139,48 @@ export async function discoverInfluencers(
   const query = new URLSearchParams();
 
   if (params?.search)
-    query.append(
-      "search",
-      params.search
-    );
+    query.append("search", params.search);
 
   if (params?.niche)
-    query.append(
-      "niche",
-      params.niche
-    );
+    query.append("niche", params.niche);
+
+  if (params?.category)
+    query.append("category", params.category);
 
   if (params?.location)
-    query.append(
-      "location",
-      params.location
-    );
+    query.append("location", params.location);
 
-  if (params?.min_followers)
+  if (params?.min_followers !== undefined)
     query.append(
       "min_followers",
       String(params.min_followers)
     );
 
-  if (params?.min_engagement)
+  if (params?.max_followers !== undefined)
+    query.append(
+      "max_followers",
+      String(params.max_followers)
+    );
+
+  if (params?.min_engagement !== undefined)
     query.append(
       "min_engagement",
       String(params.min_engagement)
     );
 
   if (params?.sort)
-    query.append(
-      "sort",
-      params.sort
-    );
+    query.append("sort", params.sort);
 
   if (params?.page)
-    query.append(
-      "page",
-      String(params.page)
-    );
+    query.append("page", String(params.page));
 
   if (params?.limit)
-    query.append(
-      "limit",
-      String(params.limit)
-    );
+    query.append("limit", String(params.limit));
 
   const res = await fetch(
     `${API_BASE_URL}/influencers?${query.toString()}`,
     {
+      method: "GET",
       headers: headers(),
     }
   );

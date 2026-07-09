@@ -9,6 +9,7 @@ import {
 import {
   getNotifications,
   markAsRead,
+  markAllAsRead,
 } from "../../services/notifications";
 
 interface Notification {
@@ -56,6 +57,31 @@ export default function Notifications() {
             : n
         )
       );
+
+      // Refresh Navbar badge
+      window.dispatchEvent(
+        new Event("notificationUpdated")
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleReadAll() {
+    try {
+      await markAllAsRead();
+
+      setNotifications((prev) =>
+        prev.map((n) => ({
+          ...n,
+          is_read: true,
+        }))
+      );
+
+      // Refresh Navbar badge
+      window.dispatchEvent(
+        new Event("notificationUpdated")
+      );
     } catch (err) {
       console.error(err);
     }
@@ -91,6 +117,10 @@ export default function Notifications() {
     return <FaBell className="text-blue-600" />;
   }
 
+  const unreadCount = notifications.filter(
+    (n) => !n.is_read
+  ).length;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
@@ -103,10 +133,18 @@ export default function Notifications() {
             Stay updated with your campaigns
           </p>
         </div>
+
+        {unreadCount > 0 && (
+          <button
+            onClick={handleReadAll}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl"
+          >
+            Mark All Read
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl border shadow-sm">
-
         {loading ? (
           <div className="p-6 text-center">
             Loading...
@@ -150,7 +188,7 @@ export default function Notifications() {
                   onClick={() =>
                     handleRead(item.id)
                   }
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm"
                 >
                   Mark Read
                 </button>

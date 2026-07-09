@@ -9,6 +9,17 @@ interface Invitation {
   message: string;
   status: string;
   created_at: string;
+
+  campaign?: {
+    id: number;
+    title: string;
+  };
+
+  influencer?: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 export default function Invitations() {
@@ -50,6 +61,7 @@ export default function Invitations() {
 
   return (
     <div className="space-y-8">
+
       <div>
         <h1 className="text-3xl font-bold">
           Sent Invitations
@@ -78,22 +90,20 @@ export default function Invitations() {
 
           <p className="text-gray-500 mt-4 max-w-lg mx-auto">
             You haven't invited any influencers yet.
-            Discover creators that match your campaign
-            and send your first invitation.
           </p>
 
           <button
-            onClick={() =>
-              navigate("/dashboard/influencers")
-            }
-            className="mt-8 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition"
+            onClick={() => navigate("/dashboard/influencers")}
+            className="mt-8 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700"
           >
             Discover Influencers
           </button>
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+
           <table className="w-full">
+
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-left p-5">
@@ -123,19 +133,31 @@ export default function Invitations() {
             </thead>
 
             <tbody>
+
               {invitations.map((invite) => (
+
                 <tr
                   key={invite.id}
                   className="border-t hover:bg-gray-50"
                 >
-                  <td className="p-5 font-medium">
-                    Campaign #{invite.campaign_id}
+
+                  <td className="p-5 font-semibold">
+                    {invite.campaign?.title ??
+                      `Campaign #${invite.campaign_id}`}
                   </td>
 
                   <td>
-                    Influencer #{invite.influencer_id}
-                  </td>
-
+                    <button
+                      onClick={() =>
+                        navigate(`/dashboard/influencers/${invite.influencer_id}`)
+                      }
+                      className="text-blue-600 hover:text-blue-800 hover:underline font-semibold"
+                    >
+                      {invite.influencer?.name ??
+                        `Influencer #${invite.influencer_id}`}
+                    </button>
+                  </td>                 
+                        
                   <td className="max-w-sm truncate">
                     {invite.message || "-"}
                   </td>
@@ -157,8 +179,7 @@ export default function Invitations() {
                   </td>
 
                   <td>
-                    {invite.status.toLowerCase() ===
-                      "accepted" && (
+                    {invite.status.toLowerCase() === "accepted" ? (
                       <button
                         onClick={() =>
                           navigate(
@@ -167,16 +188,26 @@ export default function Invitations() {
                         }
                         className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
                       >
-                        Message
+                        💬 Message
                       </button>
+                    ) : (
+                      <span className="text-gray-400">
+                        —
+                      </span>
                     )}
                   </td>
+
                 </tr>
+
               ))}
+
             </tbody>
+
           </table>
+
         </div>
       )}
+
     </div>
   );
 }

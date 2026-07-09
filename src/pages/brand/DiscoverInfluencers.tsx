@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyCampaigns } from "../../services/campaign";
 
-import { discoverInfluencers } from "../../services/influencer";
+import { discoverInfluencers } from "../../services/influencerService";
 import {
   sendInvitation,
   getBrandInvitations,
