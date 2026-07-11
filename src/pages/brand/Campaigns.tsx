@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   getMyCampaigns,
-  deleteCampaign,
+  updateCampaignStatus,
 } from "../../services/campaign";
 
 import CreateCampaignModal from "../../components/Campaign/CreateCampaignModal";
@@ -10,6 +10,10 @@ import ViewCampaignModal from "../../components/Campaign/ViewCampaignModal";
 export default function Campaigns() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+
+  const [filter, setFilter] = useState<
+  "all" | "open" | "closed"
+>("all");
 
   const [openModal, setOpenModal] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -33,17 +37,18 @@ export default function Campaigns() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Delete this campaign?")) return;
-
-    try {
-      await deleteCampaign(id);
-      loadCampaigns();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to delete campaign");
-    }
-  };
+  const handleStatus = async (
+  id: number,
+  isActive: boolean
+) => {
+  try {
+    await updateCampaignStatus(id, !isActive);
+    loadCampaigns();
+  } catch (error) {
+    console.error(error);
+    alert("Failed to update campaign");
+  }
+};
 
   const handleView = (campaign: any) => {
     setSelectedCampaign(campaign);
@@ -62,9 +67,21 @@ export default function Campaigns() {
     setOpenModal(true);
   };
 
-  const filteredCampaigns = campaigns.filter((campaign) =>
-    campaign.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCampaigns = campaigns.filter((campaign) => {
+  const matchesSearch =
+    campaign.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+  const matchesStatus =
+    filter === "all"
+      ? true
+      : filter === "open"
+      ? campaign.is_active
+      : !campaign.is_active;
+
+  return matchesSearch && matchesStatus;
+});
 
   return (
     <div>
@@ -109,109 +126,122 @@ export default function Campaigns() {
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-2xl border shadow-sm p-5 mb-6">
+      <div className="bg-white rounded-2xl border shadow-sm p-5 mb-6 flex gap-4">
         <input
-          type="text"
-          placeholder="Search Campaign..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+  type="text"
+  placeholder="Search Campaign..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="flex-1 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+/>
+
+<select
+  value={filter}
+  onChange={(e) =>
+    setFilter(e.target.value as any)
+  }
+  className="border rounded-xl px-4"
+>
+  <option value="all">All</option>
+  <option value="open">Open</option>
+  <option value="closed">Closed</option>
+</select>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left p-5">
-                Campaign
-              </th>
+      {/* Table */}
+<div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+  <table className="w-full">
+    <thead className="bg-gray-50">
+      <tr>
+        <th className="text-left p-5">Campaign</th>
+        <th className="text-left">Category</th>
+        <th className="text-left">Budget</th>
+        <th className="text-left">Deadline</th>
+        <th className="text-left">Status</th>
+        <th className="text-left">Actions</th>
+      </tr>
+    </thead>
 
-              <th className="text-left">
-                Category
-              </th>
+    <tbody>
+      {filteredCampaigns.length === 0 ? (
+        <tr>
+          <td
+            colSpan={6}
+            className="text-center p-8 text-gray-500"
+          >
+            No campaigns found.
+          </td>
+        </tr>
+      ) : (
+        filteredCampaigns.map((campaign) => (
+          <tr
+            key={campaign.id}
+            className="border-t hover:bg-gray-50"
+          >
+            <td className="p-5 font-semibold">
+              {campaign.title}
+            </td>
 
-              <th className="text-left">
-                Budget
-              </th>
+            <td>{campaign.category || "-"}</td>
 
-              <th className="text-left">
-                Deadline
-              </th>
+            <td>₹{campaign.budget}</td>
 
-              <th className="text-left">
-                Actions
-              </th>
-            </tr>
-          </thead>
+            <td>{campaign.deadline || "-"}</td>
 
-          <tbody>
-            {filteredCampaigns.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="text-center p-8 text-gray-500"
+            <td>
+              {campaign.is_active ? (
+                <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
+                  🟢 Open
+                </span>
+              ) : (
+                <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 font-semibold">
+                  🔴 Closed
+                </span>
+              )}
+            </td>
+
+            <td>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleView(campaign)}
+                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200"
                 >
-                  No campaigns found.
-                </td>
-              </tr>
-            ) : (
-              filteredCampaigns.map((campaign) => (
-                <tr
-                  key={campaign.id}
-                  className="border-t hover:bg-gray-50"
+                  👁 View
+                </button>
+
+                <button
+                  onClick={() => handleEdit(campaign)}
+                  className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
                 >
-                  <td className="p-5 font-semibold">
-                    {campaign.title}
-                  </td>
+                  ✏ Edit
+                </button>
 
-                  <td>
-                    {campaign.category || "-"}
-                  </td>
-
-                  <td>
-                    ₹{campaign.budget}
-                  </td>
-
-                  <td>
-                    {campaign.deadline || "-"}
-                  </td>
-
-                  <td>
-                    <div className="flex gap-2">
-
-                      <button
-                        onClick={() => handleView(campaign)}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200"
-                      >
-                        View
-                      </button>
-
-                      <button
-                        onClick={() => handleEdit(campaign)}
-                        className="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          handleDelete(campaign.id)
-                        }
-                        className="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                      >
-                        Delete
-                      </button>
-
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                <button
+                  onClick={() =>
+                    handleStatus(
+                      campaign.id,
+                      campaign.is_active
+                    )
+                  }
+                  className={`px-3 py-1 rounded-lg text-white ${
+                    campaign.is_active
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-green-500 hover:bg-green-600"
+                  }`}
+                >
+                  {campaign.is_active
+                    ? "🔒 Close"
+                    : "🔓 Reopen"}
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+</div>
   );
 }

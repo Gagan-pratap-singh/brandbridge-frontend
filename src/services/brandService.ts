@@ -1,6 +1,29 @@
 import API_BASE_URL from "./api";
 
-const getToken = () => localStorage.getItem("token");
+function getToken() {
+  return localStorage.getItem("token");
+}
+
+const headers = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${getToken()}`,
+});
+
+// Get Brand by User ID
+export async function getBrandByUserId(userId: number) {
+  const res = await fetch(
+    `${API_BASE_URL}/brands/${userId}`,
+    {
+      headers: headers(),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Brand not found");
+  }
+
+  return res.json();
+}
 
 export const getBrandProfile = async () => {
   const response = await fetch(`${API_BASE_URL}/brands/profile`, {
@@ -49,3 +72,55 @@ export const updateBrandProfile = async (data: any) => {
 
   return response.json();
 };
+// ==========================================
+// Upload Brand Logo
+// ==========================================
+export async function uploadBrandLogo(file: File) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_BASE_URL}/upload/brand/logo`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to upload logo");
+  }
+
+  return response.json();
+}
+
+
+// ==========================================
+// Upload Brand Cover
+// ==========================================
+export async function uploadBrandCover(file: File) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_BASE_URL}/upload/brand/cover`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to upload cover");
+  }
+
+  return response.json();
+}

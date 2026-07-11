@@ -125,3 +125,23 @@ export async function deleteCampaign(id: number) {
 
   return res.json();
 }
+export async function updateCampaignStatus(
+  id: number,
+  isActive: boolean
+) {
+  const res = await fetch(
+    `${API_BASE_URL}/campaigns/${id}/status?is_active=${isActive}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to update campaign");
+  }
+
+  return res.json();
+}
