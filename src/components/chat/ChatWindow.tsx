@@ -5,15 +5,16 @@ import API_BASE_URL from "../../services/api";
 import { getInfluencer } from "../../services/influencerService";
 
 interface Message {
-  id: number;
-  sender_id: number;
-  receiver_id: number;
-  message: string;
-  created_at: string;
+   id: number;
+   sender_id: number;
+   receiver_id: number;
+   message: string;
+   created_at: string;
 }
 
 interface Props {
-  selectedUser?: number;
+   selectedUser?: number;
+   conversation: Message[];
 }
 
 export default function ChatWindow({
