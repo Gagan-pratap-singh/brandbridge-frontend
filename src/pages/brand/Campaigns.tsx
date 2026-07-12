@@ -150,16 +150,17 @@ export default function Campaigns() {
 
       {/* Table */}
       {/* Table */}
-<div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-  <table className="w-full">
+{/* Table */}
+<div className="bg-white rounded-2xl shadow-sm border overflow-x-auto">
+  <table className="w-full table-fixed">
     <thead className="bg-gray-50">
       <tr>
-        <th className="text-left p-5">Campaign</th>
-        <th className="text-left">Category</th>
-        <th className="text-left">Budget</th>
-        <th className="text-left">Deadline</th>
-        <th className="text-left">Status</th>
-        <th className="text-left">Actions</th>
+        <th className="w-[25%] text-left p-5">Campaign</th>
+        <th className="w-[15%] text-left p-5">Category</th>
+        <th className="w-[15%] text-left p-5">Budget</th>
+        <th className="w-[15%] text-left p-5">Deadline</th>
+        <th className="w-[10%] text-left p-5">Status</th>
+        <th className="w-[20%] text-center p-5">Actions</th>
       </tr>
     </thead>
 
@@ -168,7 +169,7 @@ export default function Campaigns() {
         <tr>
           <td
             colSpan={6}
-            className="text-center p-8 text-gray-500"
+            className="text-center py-10 text-gray-500"
           >
             No campaigns found.
           </td>
@@ -177,42 +178,48 @@ export default function Campaigns() {
         filteredCampaigns.map((campaign) => (
           <tr
             key={campaign.id}
-            className="border-t hover:bg-gray-50"
+            className="border-t hover:bg-gray-50 transition"
           >
-            <td className="p-5 font-semibold">
+            <td className="p-5 font-semibold truncate">
               {campaign.title}
             </td>
 
-            <td>{campaign.category || "-"}</td>
+            <td className="p-5">
+              {campaign.category || "-"}
+            </td>
 
-            <td>₹{campaign.budget}</td>
+            <td className="p-5">
+              ₹{campaign.budget}
+            </td>
 
-            <td>{campaign.deadline || "-"}</td>
+            <td className="p-5">
+              {campaign.deadline || "-"}
+            </td>
 
-            <td>
+            <td className="p-5">
               {campaign.is_active ? (
-                <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
                   🟢 Open
                 </span>
               ) : (
-                <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 font-semibold">
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-100 text-red-700 font-medium">
                   🔴 Closed
                 </span>
               )}
             </td>
 
-            <td>
-              <div className="flex gap-2">
+            <td className="p-5">
+              <div className="flex justify-center gap-2 flex-wrap">
                 <button
                   onClick={() => handleView(campaign)}
-                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200"
+                  className="px-3 py-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200"
                 >
                   👁 View
                 </button>
 
                 <button
                   onClick={() => handleEdit(campaign)}
-                  className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+                  className="px-3 py-2 rounded-lg bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
                 >
                   ✏ Edit
                 </button>
@@ -224,7 +231,7 @@ export default function Campaigns() {
                       campaign.is_active
                     )
                   }
-                  className={`px-3 py-1 rounded-lg text-white ${
+                  className={`px-3 py-2 rounded-lg text-white ${
                     campaign.is_active
                       ? "bg-red-500 hover:bg-red-600"
                       : "bg-green-500 hover:bg-green-600"
@@ -243,5 +250,5 @@ export default function Campaigns() {
   </table>
 </div>
 </div>
-  );
+);
 }

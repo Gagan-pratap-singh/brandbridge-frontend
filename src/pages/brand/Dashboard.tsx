@@ -5,6 +5,7 @@ import Chart from "../../components/Chart/Chart";
 import ApplicationTable from "../../components/ApplicationTable/ApplicationTable";
 import InfluencerCard from "../../components/InfluencerCard/InfluencerCard";
 import MessageList from "../../components/MessageList/MessageList";
+import API_BASE_URL from "../../services/api";
 
 import { getBrandProfile } from "../../services/brandService";
 import { getBrandDashboard } from "../../services/dashboard";
@@ -47,41 +48,43 @@ export default function Dashboard() {
 
       {/* Header */}
 
-      <div className="bg-white rounded-2xl shadow border p-8 mb-8">
+ <div className="bg-white rounded-2xl shadow border p-8 mb-8">
 
-        <div className="flex items-center gap-5">
+  <div className="flex items-center gap-5">
 
-          <img
-            src={
-              profile?.logo_url ||
-              "https://i.pravatar.cc/150?img=12"
-            }
-            className="w-20 h-20 rounded-full object-cover border"
-          />
+    <img
+      src={
+        profile?.logo_url
+          ? `${API_BASE_URL}${profile.logo_url}`
+          : "https://i.pravatar.cc/150?img=12"
+      }
+      alt="Brand Logo"
+      onError={(e) => {
+        e.currentTarget.src =
+          "https://i.pravatar.cc/150?img=12";
+      }}
+      className="w-20 h-20 rounded-full object-cover border-4 border-indigo-100 shadow-md"
+    />
 
-          <div>
+    <div>
 
-            <h1 className="text-4xl font-bold">
-              👋 Welcome back,
-              <span className="text-indigo-600">
-                {" "}
-                {profile?.company_name}
-              </span>
-            </h1>
+      <h1 className="text-4xl font-bold">
+        {profile?.company_name}
+      </h1>
 
-            <p className="text-gray-500 mt-2 text-lg">
-              {profile?.industry}
-            </p>
+      <p className="text-lg text-gray-500 mt-2">
+        {profile?.industry}
+      </p>
 
-            <p className="text-gray-500">
-              📍 {profile?.location || "Not specified"}
-            </p>
+      <p className="text-gray-500 mt-1">
+        📍 {profile?.location || "Not specified"}
+      </p>
 
-          </div>
+    </div>
 
-        </div>
+  </div>
 
-      </div>
+</div>
 
       {/* KPI */}
 

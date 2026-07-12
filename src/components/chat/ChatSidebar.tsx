@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import API_BASE_URL from "../../services/api";
 import { getConversations } from "../../services/messages";
 
 interface Conversation {
   user_id: number;
   name: string;
+  profile_image?: string;
+  online: boolean;
   last_message: string;
   last_message_time: string;
   unread_count: number;
@@ -12,11 +15,13 @@ interface Conversation {
 interface Props {
   selectedUser?: number;
   onSelectUser: (id: number) => void;
+  onConversationSelect: (conversation: Conversation) => void;
 }
 
 export default function ChatSidebar({
   selectedUser,
   onSelectUser,
+  onConversationSelect,
 }: Props) {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -43,7 +48,10 @@ export default function ChatSidebar({
     return () => clearTimeout(timer);
   }, [search]);
 
-  async function loadConversations(keyword = "", silent = false) {
+  async function loadConversations(
+    keyword = "",
+    silent = false
+  ) {
     try {
       if (!hasLoadedOnce.current && !silent) {
         setLoading(true);
@@ -68,7 +76,9 @@ export default function ChatSidebar({
   return (
     <div className="w-80 border-r bg-white flex flex-col">
       <div className="p-5 border-b">
-        <h2 className="text-2xl font-bold">Messages</h2>
+        <h2 className="text-2xl font-bold">
+          Messages
+        </h2>
 
         <input
           placeholder="Search users..."
@@ -80,24 +90,51 @@ export default function ChatSidebar({
 
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <p className="p-5 text-gray-500">Loading...</p>
+          <p className="p-5 text-gray-500">
+            Loading...
+          </p>
         ) : conversations.length === 0 ? (
-          <p className="p-5 text-gray-500">No conversations found</p>
+          <p className="p-5 text-gray-500">
+            No conversations found
+          </p>
         ) : (
           conversations.map((chat) => (
             <div
               key={chat.user_id}
-              onClick={() => onSelectUser(chat.user_id)}
-              className={`flex items-center gap-4 p-5 cursor-pointer border-b hover:bg-gray-100 transition
-                ${selectedUser === chat.user_id ? "bg-indigo-50" : ""}
-              `}
+              onClick={() => {
+                onSelectUser(chat.user_id);
+                onConversationSelect(chat);
+              }}
+              className={`flex items-center gap-4 p-5 cursor-pointer border-b hover:bg-gray-100 transition ${
+                selectedUser === chat.user_id
+                  ? "bg-indigo-50"
+                  : ""
+              }`}
             >
-              <div className="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-lg">
-                {chat.name.charAt(0).toUpperCase()}
+              <div className="relative">
+                <img
+                  src={
+                    chat.profile_image
+                      ? `${API_BASE_URL}${chat.profile_image}`
+                      : "https://i.pravatar.cc/150"
+                  }
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+
+                <span
+                  className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
+                    chat.online
+                      ? "bg-green-500"
+                      : "bg-gray-400"
+                  }`}
+                />
               </div>
 
               <div className="flex-1 overflow-hidden">
-                <h3 className="font-semibold">{chat.name}</h3>
+                <h3 className="font-semibold">
+                  {chat.name}
+                </h3>
+
                 <p className="text-sm text-gray-500 truncate">
                   {chat.last_message}
                 </p>
@@ -105,7 +142,9 @@ export default function ChatSidebar({
 
               <div className="flex flex-col items-end">
                 <span className="text-xs text-gray-400">
-                  {new Date(chat.last_message_time).toLocaleTimeString([], {
+                  {new Date(
+                    chat.last_message_time
+                  ).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}

@@ -9,6 +9,8 @@ export default function Messages() {
   const { userId } = useParams();
 
   const [selectedUser, setSelectedUser] = useState<number>();
+  const [selectedConversation, setSelectedConversation] =
+    useState<any>(null);
 
   useEffect(() => {
     if (userId) {
@@ -22,12 +24,14 @@ export default function Messages() {
       <ChatSidebar
         selectedUser={selectedUser}
         onSelectUser={setSelectedUser}
+        onConversationSelect={setSelectedConversation}
       />
 
       <div className="flex-1 flex flex-col">
 
         <ChatWindow
           selectedUser={selectedUser}
+          conversation={selectedConversation}
         />
 
         <MessageInput

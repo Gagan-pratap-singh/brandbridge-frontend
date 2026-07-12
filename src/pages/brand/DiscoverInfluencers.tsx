@@ -270,15 +270,14 @@ const campaignId = Number(
                 </button>
 
                 <button
-                  className="flex-1 border border-indigo-600 text-indigo-600 py-3 rounded-xl hover:bg-indigo-50"
-                  onClick={() =>
-                    navigate(
-                      `/dashboard/influencers/${item.user_id}`
-                    )
-                  }
-                >
-                  View Profile
-                </button>
+  className="flex-1 border border-indigo-600 text-indigo-600 py-3 rounded-xl hover:bg-indigo-50"
+  onClick={() => {
+    console.log(item);
+    navigate(`/dashboard/influencers/${item.user_id}`);
+  }}
+>
+  View Profile
+</button>
               </div>
             </div>
           ))}
