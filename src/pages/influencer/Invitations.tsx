@@ -7,8 +7,13 @@ import { useNavigate } from "react-router-dom";
 
 interface Invitation {
   id: number;
+
   campaign_id: number;
+  campaign_title?: string;
+
   brand_id: number;
+  brand_name?: string;
+
   message: string;
   status: string;
   created_at: string;
@@ -138,12 +143,12 @@ export default function InfluencerInvitations() {
                   className="border-t hover:bg-gray-50"
                 >
 
-                  <td className="p-5">
-                    #{invite.campaign_id}
+                  <td className="p-5 font-semibold">
+                    {invite.campaign_title ?? `#${invite.campaign_id}`}
                   </td>
 
                   <td>
-                    #{invite.brand_id}
+                    {invite.brand_name ?? `#${invite.brand_id}`}
                   </td>
 
                   <td>

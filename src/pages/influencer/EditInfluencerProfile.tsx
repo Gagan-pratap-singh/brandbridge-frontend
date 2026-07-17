@@ -10,7 +10,7 @@ export default function EditInfluencerProfile() {
   const [saving, setSaving] = useState(false);
 
   const [profile, setProfile] = useState<any>({
-  name: "",
+  //name: "",
   bio: "",
   location: "",
   website: "",

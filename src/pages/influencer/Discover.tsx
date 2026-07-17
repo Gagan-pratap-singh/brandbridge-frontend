@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+
 import { getCampaigns } from "../../services/campaign";
 import {
   applyToCampaign,
   getMyApplications,
 } from "../../services/application";
 
+import {
+  getBookmarks,
+  addBookmark,
+  removeBookmark,
+} from "../../services/bookmark";
+
 import ViewCampaignModal from "../../components/Campaign/ViewCampaignModal";
 
 export default function Discover() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [applications, setApplications] = useState<number[]>([]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 
@@ -33,6 +42,14 @@ export default function Discover() {
           (app: any) => app.campaign_id
         )
       );
+
+      const bookmarkData = await getBookmarks();
+
+      setBookmarkedIds(
+        bookmarkData.map(
+          (bookmark: any) => bookmark.campaign_id
+        )
+      );
     } catch (err) {
       console.error(err);
     }
@@ -52,20 +69,37 @@ export default function Discover() {
 
       alert("Application submitted successfully!");
 
-      setApplications([
-        ...applications,
-        campaignId,
-      ]);
+      setApplications((prev) => [...prev, campaignId]);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const toggleBookmark = async (campaignId: number) => {
+    try {
+      if (bookmarkedIds.includes(campaignId)) {
+        await removeBookmark(campaignId);
+
+        setBookmarkedIds((prev) =>
+          prev.filter((id) => id !== campaignId)
+        );
+      } else {
+        await addBookmark(campaignId);
+
+        setBookmarkedIds((prev) => [
+          ...prev,
+          campaignId,
+        ]);
+      }
     } catch (err: any) {
       alert(err.message);
     }
   };
 
   const filteredCampaigns = campaigns.filter((campaign) => {
-    const matchesSearch =
-      campaign.title
-        .toLowerCase()
-        .includes(search.toLowerCase());
+    const matchesSearch = campaign.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
 
     const matchesCategory =
       category === "All" ||
@@ -143,23 +177,42 @@ export default function Discover() {
 
           <div
             key={campaign.id}
-            className="bg-white rounded-2xl p-6 shadow-sm border"
+            className="relative bg-white rounded-2xl p-6 shadow-sm border hover:shadow-lg transition"
           >
 
+            {/* Bookmark */}
+            <button
+              onClick={() =>
+                toggleBookmark(campaign.id)
+              }
+              className="absolute top-5 right-5 text-2xl text-indigo-600 hover:scale-110 transition"
+            >
+              {bookmarkedIds.includes(
+                campaign.id
+              ) ? (
+                <FaBookmark />
+              ) : (
+                <FaRegBookmark />
+              )}
+            </button>
+
+            {/* Category */}
             <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-sm">
               {campaign.category || "General"}
             </span>
 
+            {/* Title */}
             <h2 className="text-xl font-bold mt-4">
               {campaign.title}
             </h2>
 
+            {/* Description */}
             <p className="text-gray-500 mt-3 line-clamp-3">
               {campaign.description}
             </p>
 
+            {/* Details */}
             <div className="mt-5 space-y-2">
-
               <p>
                 💰 Budget: ₹{campaign.budget}
               </p>
@@ -168,9 +221,9 @@ export default function Discover() {
                 📅 Deadline:{" "}
                 {campaign.deadline || "N/A"}
               </p>
-
             </div>
 
+            {/* Buttons */}
             <div className="mt-6 flex gap-3">
 
               <button
@@ -182,34 +235,37 @@ export default function Discover() {
                 View
               </button>
 
-  {campaign.already_invited ? (
+              {campaign.already_invited ? (
 
-  <button
-  disabled
-  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-xl cursor-not-allowed font-semibold shadow"
->
-  📩 You were Invited
-</button>
+                <button
+                  disabled
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-xl cursor-not-allowed font-semibold"
+                >
+                  📩 Invited
+                </button>
 
-) : campaign.already_applied || applications.includes(campaign.id) ? (
+              ) : campaign.already_applied ||
+                applications.includes(campaign.id) ? (
 
-  <button
-    disabled
-    className="flex-1 bg-green-600 text-white py-3 rounded-xl cursor-not-allowed"
-  >
-    Applied ✓
-  </button>
+                <button
+                  disabled
+                  className="flex-1 bg-green-600 text-white py-3 rounded-xl cursor-not-allowed"
+                >
+                  Applied ✓
+                </button>
 
-) : (
+              ) : (
 
-  <button
-    onClick={() => handleApply(campaign.id)}
-    className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700"
-  >
-    Apply
-  </button>
+                <button
+                  onClick={() =>
+                    handleApply(campaign.id)
+                  }
+                  className="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700"
+                >
+                  Apply
+                </button>
 
-)}
+              )}
 
             </div>
 
