@@ -34,6 +34,7 @@ import InfluencerMessages from "./pages/influencer/Messages";
 import InfluencerNotifications from "./pages/influencer/Notifications";
 import Bookmarks from "./pages/influencer/Bookmarks";
 import InfluencerProfile from "./pages/influencer/Profile";
+import EditInfluencerProfile from "./pages/influencer/EditInfluencerProfile";
 import InfluencerSettings from "./pages/influencer/Settings";
 import InfluencerInvitations from "./pages/influencer/Invitations";
 
@@ -49,83 +50,108 @@ function App() {
         element={<ForgotPassword />}
       />
 
-{/* Brand Dashboard */}
-<Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute role="brand">
-      <DashboardLayout />
-    </ProtectedRoute>
-  }
->
-  <Route index element={<Dashboard />} />
+      {/* Brand Dashboard */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute role="brand">
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
 
-  <Route path="campaigns" element={<Campaigns />} />
+        <Route path="campaigns" element={<Campaigns />} />
 
-  <Route path="applications" element={<Applications />} />
+        <Route path="applications" element={<Applications />} />
 
-  {/* Messages */}
-  <Route path="messages">
-    <Route index element={<Messages />} />
-    <Route path=":userId" element={<Messages />} />
-  </Route>
+        {/* Messages */}
+        <Route path="messages">
+          <Route index element={<Messages />} />
+          <Route path=":userId" element={<Messages />} />
+        </Route>
 
-  <Route
-    path="notifications"
-    element={<Notifications />}
-  />
+        <Route
+          path="notifications"
+          element={<Notifications />}
+        />
 
-  <Route path="profile" element={<Profile />} />
+        <Route path="profile" element={<Profile />} />
 
-  <Route path="analytics" element={<Analytics />} />
+        <Route path="analytics" element={<Analytics />} />
 
-  <Route path="settings" element={<Settings />} />
+        <Route path="settings" element={<Settings />} />
 
-  <Route
-    path="influencers"
-    element={<DiscoverInfluencers />}
-  />
-  <Route
-  path="influencers/:userId"
-  element={<BrandInfluencerProfile />}
-  />
-  <Route
-  path="invitations"
-  element={<Invitations />}
-  />
-</Route>
+        <Route
+          path="influencers"
+          element={<DiscoverInfluencers />}
+        />
+
+        <Route
+          path="influencers/:userId"
+          element={<BrandInfluencerProfile />}
+        />
+
+        <Route
+          path="invitations"
+          element={<Invitations />}
+        />
+      </Route>
 
       {/* Influencer Dashboard */}
       <Route
         path="/influencer"
         element={
           <ProtectedRoute role="influencer">
-          <InfluencerLayout />
+            <InfluencerLayout />
           </ProtectedRoute>
-        }>
+        }
+      >
         <Route index element={<InfluencerDashboard />} />
+
         <Route path="discover" element={<Discover />} />
+
         <Route
           path="applications"
           element={<InfluencerApplications />}
         />
+
+        {/* Messages */}
         <Route path="messages">
-        <Route index element={<InfluencerMessages />} />
-        <Route path=":userId"  element={<InfluencerMessages />}  />
+          <Route index element={<InfluencerMessages />} />
+          <Route
+            path=":userId"
+            element={<InfluencerMessages />}
+          />
         </Route>
+
         <Route
           path="notifications"
           element={<InfluencerNotifications />}
         />
-        <Route path="bookmarks" element={<Bookmarks />} />
+
+        <Route
+          path="bookmarks"
+          element={<Bookmarks />}
+        />
+
+        {/* Public Profile */}
         <Route
           path="profile"
           element={<InfluencerProfile />}
         />
+
+        {/* NEW Edit Profile */}
+        <Route
+          path="profile/edit"
+          element={<EditInfluencerProfile />}
+        />
+
         <Route
           path="settings"
           element={<InfluencerSettings />}
         />
+
         <Route
           path="invitations"
           element={<InfluencerInvitations />}

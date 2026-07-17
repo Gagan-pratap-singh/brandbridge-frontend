@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import ProfileHeader from "../../components/profile/ProfileHeader";
-import CompanyInfo from "../../components/profile/CompanyInfo";
-import CompanyStats from "../../components/profile/CompanyStats";
-import SocialLinks from "../../components/profile/SocialLinks";
+import ProfileHeader from "../../components/BrandProfile/ProfileHeader";
+import CompanyInfo from "../../components/BrandProfile/CompanyInfo";
+import CompanyStats from "../../components/BrandProfile/CompanyStats";
+import SocialLinks from "../../components/BrandProfile/SocialLinks";
 
 import API_BASE_URL from "../../services/api";
 

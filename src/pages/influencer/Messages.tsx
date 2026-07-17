@@ -8,8 +8,7 @@ import MessageInput from "../../components/chat/MessageInput";
 export default function Messages() {
   const { userId } = useParams();
 
-  const [selectedUser, setSelectedUser] =
-    useState<number>();
+  const [selectedUser, setSelectedUser] = useState<number>();
 
   useEffect(() => {
     if (userId) {
@@ -22,6 +21,7 @@ export default function Messages() {
       <ChatSidebar
         selectedUser={selectedUser}
         onSelectUser={setSelectedUser}
+        onConversationSelect={() => {}}
       />
 
       <div className="flex-1 flex flex-col">

@@ -193,3 +193,54 @@ export async function discoverInfluencers(
 
   return res.json();
 }
+// ==========================================
+// Upload Influencer Profile Image
+// ==========================================
+export async function uploadProfileImage(file: File) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_BASE_URL}/upload/influencer/profile-image`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to upload profile image");
+  }
+
+  return response.json();
+}
+
+// ==========================================
+// Upload Influencer Cover Image
+// ==========================================
+export async function uploadCoverImage(file: File) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await fetch(
+    `${API_BASE_URL}/upload/influencer/cover-image`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to upload cover image");
+  }
+
+  return response.json();
+}
