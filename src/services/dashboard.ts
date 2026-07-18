@@ -4,88 +4,50 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
-const headers = () => ({
+const headers = {
   Authorization: `Bearer ${getToken()}`,
-});
-
-export async function getBrandDashboard() {
-  const response = await fetch(
-    `${API_BASE_URL}/dashboard/brand`,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to load dashboard");
-  }
-
-  return response.json();
-}
+};
 
 export async function getInfluencerDashboard() {
   const res = await fetch(
     `${API_BASE_URL}/dashboard/influencer`,
-    {
-      headers: headers(),
-    }
+    { headers }
   );
 
-  if (!res.ok) {
-    throw new Error("Failed to load dashboard");
-  }
+  if (!res.ok) throw new Error("Dashboard failed");
 
   return res.json();
 }
-export async function getMonthlyApplications() {
-  const response = await fetch(
-    `${API_BASE_URL}/dashboard/brand/chart`,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    }
+
+export async function getInfluencerChart() {
+  const res = await fetch(
+    `${API_BASE_URL}/dashboard/influencer/chart`,
+    { headers }
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to load chart");
-  }
+  if (!res.ok) throw new Error("Chart failed");
 
-  return response.json();
+  return res.json();
 }
 
-export async function getRecentApplications() {
-  const response = await fetch(
-    `${API_BASE_URL}/dashboard/brand/recent-applications`,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    }
+export async function getAcceptanceRate() {
+  const res = await fetch(
+    `${API_BASE_URL}/dashboard/influencer/acceptance-rate`,
+    { headers }
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch applications");
-  }
+  if (!res.ok) throw new Error("Rate failed");
 
-  return response.json();
+  return res.json();
 }
 
-export async function getTopInfluencers() {
-  const response = await fetch(
-    `${API_BASE_URL}/dashboard/brand/top-influencers`,
-    {
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
-    }
+export async function getRecentCampaigns() {
+  const res = await fetch(
+    `${API_BASE_URL}/dashboard/influencer/recent-campaigns`,
+    { headers }
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch influencers");
-  }
+  if (!res.ok) throw new Error("Campaigns failed");
 
-  return response.json();
+  return res.json();
 }
